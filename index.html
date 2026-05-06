@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MD3E Renderer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- ==================== TOP APP BAR ==================== -->
+    <header class="top-app-bar">
+      <div class="top-app-bar-inner">
+
+        <div class="top-app-bar-brand">
+          <div class="top-app-bar-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="top-app-bar-title">MD Renderer</div>
+            <div class="top-app-bar-sub">Markdown · 渲染器</div>
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <nav id="segmented-button" class="segmented-button">
+          <button class="segmented-button-item active" data-mode="preview">预览</button>
+          <button class="segmented-button-item" data-mode="split">分屏</button>
+        </nav>
+
+        <div id="icon-button-group" class="icon-button-group">
+          <button id="btn-copy" class="icon-button" title="复制">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+            </svg>
+          </button>
+          <div class="icon-button-sep"></div>
+          <button id="btn-clear" class="icon-button" title="清除">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- ==================== MAIN ==================== -->
+    <main class="main">
+
+      <!-- Landing -->
+      <section id="landing" class="landing">
+        <div id="drop-zone" class="drop-zone">
+          <div class="drop-zone-inner">
+            <div class="drop-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+              </svg>
+            </div>
+            <h2 class="drop-title">拖拽 Markdown 文件到此处</h2>
+            <p class="drop-hint">或直接粘贴 Markdown 内容 (Ctrl+V)</p>
+            <div class="drop-or">或者</div>
+            <input type="file" id="file-input" accept=".md,.markdown,.txt" hidden>
+            <button id="btn-select" class="drop-btn">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+              </svg>
+              选择文件
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Content -->
+      <section id="content-area" class="content-area">
+
+        <div class="meta-bar">
+          <div class="meta-bar-inner">
+            <div class="meta-left">
+              <span class="meta-chip">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span id="meta-filename">document.md</span>
+              </span>
+              <span class="meta-dot"></span>
+              <span id="meta-chars" class="meta-chip">0 字符</span>
+            </div>
+            <div class="meta-right">
+              <span id="meta-lines" class="meta-chip">0 行</span>
+              <span class="meta-dot"></span>
+              <span id="meta-time" class="meta-chip">≈ 0 分钟</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview -->
+        <div id="panel-preview" class="panel panel-preview visible">
+          <div class="md-wrap">
+            <article id="md-preview" class="md-content"></article>
+          </div>
+        </div>
+
+        <!-- Split -->
+        <div id="panel-split" class="panel panel-split">
+          <div class="split-wrap">
+            <div class="split-pane">
+              <div class="split-header">
+                <div class="editor-dots">
+                  <div class="editor-dot"></div>
+                  <div class="editor-dot"></div>
+                  <div class="editor-dot"></div>
+                </div>
+                <span class="split-label">source</span>
+              </div>
+              <div class="split-body">
+                <textarea id="md-editor-split" class="split-textarea" placeholder="在此输入 Markdown 内容..." spellcheck="false"></textarea>
+              </div>
+            </div>
+            <div class="split-pane">
+              <div class="split-header">
+                <div class="editor-dots">
+                  <div class="editor-dot"></div>
+                  <div class="editor-dot"></div>
+                  <div class="editor-dot"></div>
+                </div>
+                <span class="split-label">preview</span>
+              </div>
+              <div class="split-body">
+                <article id="md-preview-split" class="split-preview md-content"></article>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
