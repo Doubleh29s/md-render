@@ -1,3 +1,5 @@
+const { calculateStats, cleanMarkdownText } = window.MarkdownUtils;
+
 marked.setOptions({ 
   breaks: true, 
   gfm: true
@@ -30,21 +32,6 @@ const dom = {
   btnClear: $('#btn-clear'),
   toast: $('#toast')
 };
-
-function cleanMarkdownText(text) {
-  if (!text) return '';
-  
-  // 规范化换行符
-  let cleaned = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-  
-  // 移除不可见控制字符，但保留换行和制表符
-  cleaned = cleaned.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
-  
-  // 替换零宽字符为空格
-  cleaned = cleaned.replace(/[\u200B-\u200D\uFEFF]/g, '');
-
-  return cleaned;
-}
 
 function getClipboardText(e) {
   let text = '';
@@ -82,9 +69,7 @@ function showToast(msg) {
 }
 
 function updateStats() {
-  const chars = state.content.length;
-  const lines = state.content ? state.content.split('\n').length : 0;
-  const minutes = Math.max(1, Math.ceil(chars / 500));
+  const { chars, lines, minutes } = calculateStats(state.content);
   dom.metaCharCount.textContent = `${chars.toLocaleString()} 字符`;
   dom.metaLineCount.textContent = `${lines} 行`;
   dom.metaReadTime.textContent = `≈ ${minutes} 分钟`;

@@ -1,0 +1,17 @@
+{
+  "name": "md-render",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A static Markdown renderer used to practise a basic GitHub CI/CD pipeline.",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "eslint": "^10.10.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
